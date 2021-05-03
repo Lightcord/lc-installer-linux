@@ -8,7 +8,7 @@ This installer has been moved to it's own repo in order to make maintenance easi
 
 If you use Arch Linux or derivaties, use the AUR package. [Click here for more details](https://github.com/Lightcord/Lightcord#arch-linux-or-arch-based)
 
-Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/Lightcord/master/LULI.sh)"`
+Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
 ## Remarks
 
