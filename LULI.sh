@@ -96,15 +96,22 @@ if [ ! -e /lib/libnspr4.so ] || [ ! -e /lib/libnss3.so ]; then
     read -r REPLY
 fi
 
+tput setaf 3
+tput bold
 cat << "logo_end"
   _    _      _   _                 _
  | |  (_)__ _| |_| |_ __ ___ _ _ __| |
  | |__| / _` | ' \  _/ _/ _ \ '_/ _` |
  |____|_\__, |_||_\__\__\___/_| \__,_|
         |___/
-  Unified Linux Installer and Updater
-
 logo_end
+tput sgr0
+
+tput setaf 2
+printf "  Unified Linux Installer and Updater\n"
+tput sgr0
+
+printf "    Written with $(tput setaf 1 && tput bold && tput blink)<3$(tput sgr0) by $(tput bold)pryme-svg$(tput sgr0) and $(tput bold)GermanBread$(tput sgr0)\n\n"
 
 # First, we need to figure out what kind of install the user wants (AppImage or System-wide?)
 printf "Please select\n"
@@ -153,25 +160,28 @@ case $method in
     1)
     #Standard installer
     tput setaf 208
-    tput sgr0
     printf "Please select\n"
     printf "1: Install Lightcord\n"
     printf "2: Uninstall Lightcord\n"
     printf "3: Update Lightcord\n"
     printf "\n"
+    tput sgr0
 
     #Repeat only if the user hasn't entered an integer...
     while ! echo $selection | grep -Eq "^[0-9]";
     do
         read -r selection;
         # If the entered value was not an integer, prompt the user again
-        if ! echo $method | grep -Eq "^[0-9]"; then
+        if ! echo $selection | grep -Eq "^[0-9]"; then
             sleep 1;
-            printf "$(tput setaf 9)Please try again$(tput sgr0)\n";
+            tput setaf 9
+            printf "Please try again\n";
+            tput setaf 208
             printf "1: Install Lightcord\n";
             printf "2: Uninstall Lightcord\n";
             printf "3: Update Lightcord\n"
             printf "\n";
+            tput sgr0
         fi
     done
 
@@ -258,26 +268,27 @@ case $method in
     fi
 
     tput setaf 208
-    tput sgr0
-
-
     printf "Please select\n";
     printf "1: Install Lightcord\n";
     printf "2: Uninstall Lightcord\n";
     printf "3: Update Lightcord\n"
     printf "\n";
+    tput sgr0
 
     while ! echo $selection | grep -Eq "^[0-9]";
     do
         read -r selection;
         # If the entered value was not an integer, prompt the user again
-        if ! echo $method | grep -Eq "^[0-9]"; then
+        if ! echo $selection | grep -Eq "^[0-9]"; then
             sleep 1;
-            printf "$(tput setaf 9)Please try again$(tput sgr0)\n";
+            tput setaf 9
+            printf "Please try again\n";
+            tput setaf 208
             printf "1: Install Lightcord\n";
             printf "2: Uninstall Lightcord\n";
             printf "3: Update Lightcord\n"
             printf "\n";
+            tput sgr0
         fi
     done
 
