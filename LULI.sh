@@ -32,7 +32,22 @@ ALT_LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcor
 # Some helper funtions
 Download() {
 	wget --progress=dot -O $1 $2 2>&1 | grep --line-buffered "%" | \
-		sed -u -e "s,\.,,g" | awk '{printf("\b\b\b\b\b%\b\b\b\b\b\b\b\b\b\b\b\b\b\b%4s ETA: %s   ", $2, $4)}'
+		sed -u -e "s,\.,,g" | awk '{print substr($2, 1, length($2)-1); fflush()}'  | while read r; do ProgressBar $r; done # echo </dev/stdout 
+}
+ProgressBar () {
+	_progress=$(((${1}*100/100*100)/100))
+	_done=$((($_progress*4)/10))
+	_left=$((40-$_done))
+	# Build progressbar string lengths
+	_done=$(printf "%${_done}s" ' ' | tr ' ' "#")
+	_left=$(printf "%${_left}s" ' ' | tr ' ' "-")
+	if [ $_progress = 100 ]; then _left=""; fi # dumb $(()) quirks
+
+	tput setaf 2
+	printf "\r[${_done}${_left}] ${_progress}%% "
+	if [ $_progress = 100 ]; then printf "\n"; fi
+	tput setaf sgr0
+	#printf "\rProgress : [${_done// /#}${_left// /-}] ${_progress}%%"
 }
 Info() {
     tput setaf 8
