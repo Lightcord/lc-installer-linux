@@ -30,6 +30,25 @@ ALT_LC_APPIMAGE='https://github.com/Lightcord/Lightcord/releases/latest/download
 ALT_LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcord-linux-x64.zip'
 
 # Some helper funtions
+Download() {
+	wget --progress=dot -O $1 $2 2>&1 | grep --line-buffered "%" | \
+		sed -u -e "s,\.,,g" | stdbuf -o0 awk '{print substr($2, 1, length($2)-1)}'  | while read r; do ProgressBar $r; done
+}
+ProgressBar () {
+	_progress=$(((${1}*100/100*100)/100))
+	_done=$((($_progress*4)/10))
+	_left=$((40-$_done))
+	# Build progressbar string lengths
+	_done=$(printf "%${_done}s" ' ' | tr ' ' "#")
+	_left=$(printf "%${_left}s" ' ' | tr ' ' "-")
+	if [ $_progress = 100 ]; then _left=""; fi # dumb $(()) quirks
+
+	tput setaf 2
+	printf "\r[${_done}${_left}] ${_progress}%% "
+	if [ $_progress = 100 ]; then printf "\n"; fi
+	tput setaf sgr0
+	#printf "\rProgress : [${_done// /#}${_left// /-}] ${_progress}%%"
+}
 Info() {
     tput setaf 8
     tput bold
@@ -193,10 +212,10 @@ case $method in
         rm -rf Lightcord;
         rm -rf lightcord-linux-x64.*;
         SubInfo "Downloading Lightcord"
-        wget --show-progress -qO lightcord-linux-x64.zip $LC;
+        Download lightcord-linux-x64.zip $LC;
         if [ ! $? ]; then
             SubInfo "Trying alternate URL"
-            wget --show-progress -qO lightcord-linux-x64.zip $ALT_LC;
+            Download lightcord-linux-x64.zip $ALT_LC;
         fi
         unzip -qq lightcord-linux-x64.zip -d Lightcord;
         cd Lightcord;
@@ -204,7 +223,7 @@ case $method in
         cd ..;
         sudo mv Lightcord/ $GLOBAL_INSTALL_DIR;
         SubInfo "Downloading Lightcord icon"
-        wget --show-progress -qO lightcord.png $ICON;
+        Download lightcord.png $ICON;
         sudo mkdir -p /usr/share/pixmaps;
         sudo mv lightcord.png /usr/share/pixmaps;
         SubInfo "Creating Desktop entry"
@@ -238,10 +257,10 @@ case $method in
         SubInfo "Deleting Lightcord"
         sudo rm -r $GLOBAL_INSTALL_DIR/Lightcord;
         SubInfo "Downloading Lightcord"
-        wget --show-progress -qO lightcord-linux-x64.zip $LC;
+        Download lightcord-linux-x64.zip $LC;
         if [ ! $? ]; then
             SubInfo "Trying alternate URL"
-            wget --show-progress -qO lightcord-linux-x64.zip $ALT_LC;
+            Download lightcord-linux-x64.zip $ALT_LC;
         fi
         unzip -qq lightcord-linux-x64.zip -d Lightcord;
         cd Lightcord;
@@ -297,13 +316,13 @@ case $method in
         1) # Install LC
         Info 'Installing Lightcord'
         SubInfo "Downloading Lightcord"
-        wget --show-progress -qO lightcord.AppImage $LC_APPIMAGE;
+        Download lightcord.AppImage $LC_APPIMAGE;
         if [ ! $? ]; then
             SubInfo "Trying alternate URL"
-            wget --show-progress -qO lightcord.AppImage $ALT_LC_APPIMAGE;
+            Download lightcord.AppImage $ALT_LC_APPIMAGE;
         fi
         SubInfo "Downloading Lightcord icon"
-        wget --show-progress -qO lightcord.png $ICON;
+        Download lightcord.png $ICON;
         mkdir -p "$LOCAL_INSTALL_DIR";
         mv lightcord.AppImage "$LOCAL_INSTALL_DIR";
         chmod +x "$LOCAL_INSTALL_DIR/lightcord.AppImage";
@@ -329,10 +348,10 @@ case $method in
         SubInfo "Deleting Lightcord"
         rm "$LOCAL_INSTALL_DIR"/lightcord.AppImage;
         SubInfo "Downloading Lightcord"
-        wget --show-progress -qO lightcord.AppImage $LC_APPIMAGE;
+        Download lightcord.AppImage $LC_APPIMAGE;
         if [ ! $? ]; then
             SubInfo "Trying alternate URL"
-            wget --show-progress -qO lightcord.AppImage $ALT_LC_APPIMAGE;
+            Download lightcord.AppImage $ALT_LC_APPIMAGE;
         fi
         mkdir -p "$LOCAL_INSTALL_DIR";
         mv lightcord.AppImage "$LOCAL_INSTALL_DIR";
