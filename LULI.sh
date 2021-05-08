@@ -32,7 +32,7 @@ ALT_LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcor
 # Some helper funtions
 Download() {
 	wget --progress=dot -O $1 $2 2>&1 | grep --line-buffered "%" | \
-		sed -u -e "s,\.,,g" | awk '{print substr($2, 1, length($2)-1); fflush()}'  | while read r; do ProgressBar $r; done # echo </dev/stdout 
+		sed -u -e "s,\.,,g" | stdbuf -o0 awk '{print substr($2, 1, length($2)-1)}'  | while read r; do ProgressBar $r; done
 }
 ProgressBar () {
 	_progress=$(((${1}*100/100*100)/100))
