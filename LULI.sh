@@ -221,6 +221,7 @@ case $method in
         rm -rf Lightcord.*;
         rm -rf Lightcord;
         rm -rf lightcord-linux-x64.*;
+        sudo mkdir -p /usr/share/applications
         SubInfo "Downloading Lightcord"
         Download lightcord-linux-x64.zip $LC;
         if [ ! $? ]; then
@@ -324,6 +325,9 @@ case $method in
 
     case $selection in
         1) # Install LC
+        Info "Preparing"
+        mkdir -p ~/.local/share/icons/hicolor/512x512/apps
+
         Info 'Installing Lightcord'
         SubInfo "Downloading Lightcord"
         Download lightcord.AppImage $LC_APPIMAGE;
@@ -336,7 +340,6 @@ case $method in
         mkdir -p "$LOCAL_INSTALL_DIR";
         mv lightcord.AppImage "$LOCAL_INSTALL_DIR";
         chmod +x "$LOCAL_INSTALL_DIR/lightcord.AppImage";
-        mkdir -p ~/.local/share/icons/hicolor/512x512/apps
         mv lightcord.png ~/.local/share/icons/hicolor/512x512/apps;
         SubInfo "Creating local desktop entry"
         printf "[Desktop Entry]\nName=Lightcord\nComment[fr_FR]=Un client Discord simple et personalisable\nComment=A simple - customizable - Discord Client\nExec=$LOCAL_INSTALL_DIR/lightcord.AppImage\nIcon=lightcord\nTerminal=false\nType=Application\nCategories=Network;InstantMessaging;P2P;" >> ~/.local/share/applications/lightcord.desktop;
