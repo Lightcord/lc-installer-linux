@@ -98,27 +98,36 @@ if [ -d /bedrock ]; then
 fi
 
 # Check if unzip is installed
-if [ ! -e /bin/unzip ]; then
+unzip &>/dev/null
+if [ $? -ne 0 ]; then
     Warning "Unzip does not seem to be installed!\n\tThis script depends on this package.\n\tInstall unzip and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
 
 # Same for wget
-if [ ! -e /bin/wget ]; then
+wget -h &>/dev/null
+if [ $? -ne 0 ]; then
     Warning "Wget does not seem to be installed!\n\tThis script depends on this package.\n\tInstall wget and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
 
+whereis -b libnspr4 | grep .so &>/dev/null
+status=$?
+whereis -b libnss3 | grep .so &>/dev/null
+let status=$status+$?
+
 # Library checks (should prevent issues like https://github.com/Lightcord/Lightcord/issues/240)
-if [ ! -e /lib/libnspr4.so ] || [ ! -e /lib/libnss3.so ]; then
+if [ $status -ne 0 ]; then
     Warning "Some required libraries seem to not be installed!\n\tMake sure that both 'libnspr4.so' and 'libnss3.so' are present in '/lib'"
-    if [ -e /bin/pacman ]; then
-        SubInfo "$(tput setaf 12 && tput bold)Arch Linux or Arch-based$(tput sgr0 && tput setaf 15) sudo pacman -S nss nspr"
+    pacman -h &>/dev/null
+    if [ $? -eq 0 ]; then
+        SubInfo "$(tput setaf 12 && tput bold)Arch Linux or Arch-based$(tput sgr0 && tput setaf 15)\n\tsudo pacman -S nss nspr"
     fi
-    if [ -e /bin/apt ]; then
-        SubInfo "$(tput setaf 13 && tput bold)Debian or Debian-based$(tput sgr0 && tput setaf 15) sudo apt install libnspr4 libnss3"
+    apt --help &>/dev/null
+    if [ $? -eq 0 ]; then
+        SubInfo "$(tput setaf 13 && tput bold)Debian or Debian-based$(tput sgr0 && tput setaf 15)\n\tsudo apt install libnspr4 libnss3"
     fi
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
@@ -164,7 +173,7 @@ done
 if [ "$method" = 1 ]; then
     # Display a small warning for NixOS
     if [ -d "/nix" ]; then
-        Warning "Warning: NixOS handles packages differently, you should use the AppImage install method to prevent any breakage of Lightcord.\n\tIf you insist on installing Lightcord globally, continue."
+        Warning "Warning: NixOS support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method."
     fi
     
     # If there isn't a indicator file present, refuse to continue
@@ -222,6 +231,7 @@ case $method in
         rm -rf Lightcord;
         rm -rf lightcord-linux-x64.*;
         sudo mkdir -p /usr/share/applications
+        sudo mkdir -p "$GLOBAL_INSTALL_DIR"
         SubInfo "Downloading Lightcord"
         Download lightcord-linux-x64.zip $LC;
         if [ ! $? ]; then
@@ -327,6 +337,7 @@ case $method in
         1) # Install LC
         Info "Preparing"
         mkdir -p ~/.local/share/icons/hicolor/512x512/apps
+        mkdir -p ~/.local/share/applications
 
         Info 'Installing Lightcord'
         SubInfo "Downloading Lightcord"
@@ -382,5 +393,3 @@ case $method in
     Error 'Aborting install'
     ;;
 esac
-
-exit
