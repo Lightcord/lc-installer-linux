@@ -152,8 +152,8 @@ printf "    Written with $(tput setaf 1 && tput bold && tput blink)<3$(tput sgr0
 
 # First, we need to figure out what kind of install the user wants (AppImage or System-wide?)
 printf "Please select\n"
-printf "1: Install Lightcord for all users\n"
-printf "2: Install Lightcord only for you (Appimage install)\n"
+printf "1: Manage global install\n"
+printf "2: Manage local install (Appimage install, per-user)\n"
 printf "\n"
 
 #Repeat only if the user hasn't entered an integer...
@@ -164,8 +164,8 @@ do
     if ! echo $method | grep -Eq "^[0-9]"; then
         sleep 1
         printf "$(tput setaf 9)Please try again$(tput sgr0)\n"
-        printf "1: Install Lightcord for all users\n"
-        printf "2: Install Lightcord only for you (Appimage install)\n"
+        printf "1: Manage global install\n"
+        printf "2: Manage local install (Appimage install, per-user)\n"
         printf "\n"
     fi
 done
@@ -173,7 +173,7 @@ done
 if [ "$method" = 1 ]; then
     # Display a small warning for NixOS
     if [ -d "/nix" ]; then
-        Warning "Warning: NixOS support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method."
+        Warning "Warning: Nix(OS) support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method. If AppImages don't work then run from source."
     fi
     
     # If there isn't a indicator file present, refuse to continue
@@ -248,7 +248,7 @@ case $method in
         sudo mkdir -p /usr/share/pixmaps;
         sudo mv lightcord.png /usr/share/pixmaps;
         SubInfo "Creating Desktop entry"
-        printf "[Desktop Entry]\nName=Lightcord\nComment[fr_FR]=Un client Discord simple et personalisable\nComment=A simple - customizable - Discord Client\nExec=$GLOBAL_INSTALL_DIR/Lightcord/lightcord\nIcon=lightcord\nTerminal=false\nType=Application\nCategories=Network;InstantMessaging;P2P;" > Lightcord.desktop
+        printf "[Desktop Entry]\nName=Lightcord\nComment[fr_FR]=Un client Discord simple et personalisable\nComment=A simple - customizable - Discord Client\nExec=$GLOBAL_INSTALL_DIR/Lightcord/lightcord\nIcon=lightcord\nTerminal=false\nType=Application\nCategories=Network;InstantMessaging;P2P;\nStartupWMClass=lightcord" > Lightcord.desktop
         sudo mv Lightcord.desktop /usr/share/applications/Lightcord.desktop
         sudo chmod +x /usr/share/applications/Lightcord.desktop;
         SubInfo "Cleaning up"
