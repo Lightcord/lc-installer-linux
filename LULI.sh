@@ -27,6 +27,7 @@ fi
 ICON='https://raw.githubusercontent.com/Lightcord/Lightcord/master/discord.png'
 LC_APPIMAGE='https://lightcord.org/api/gh/releases/Lightcord/Lightcord/dev/lightcord-linux-x86_64.AppImage'
 LC='https://lightcord.org/api/v1/gh/releases/Lightcord/Lightcord/dev/lightcord-linux-x64.zip'
+LC_DESKTOP='https://raw.githubusercontent.com/Lightcord/Lightcord/master/Lightcord.desktop'
 # Fallback URL
 ALT_LC_APPIMAGE='https://github.com/Lightcord/Lightcord/releases/latest/download/Lightcord-linux-x86_64.AppImage'
 ALT_LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcord-linux-x64.zip'
@@ -50,6 +51,9 @@ ProgressBar() {
 	if [ $_progress = 100 ]; then printf "\n"; fi
 	tput setaf sgr0
 	#printf "\rProgress : [${_done// /#}${_left// /-}] ${_progress}%%"
+}
+EscapePath() {
+    echo $* | sed 's/\//\\\//g'
 }
 Info() {
     tput setaf 8
@@ -100,7 +104,7 @@ fi
 # Check if unzip is installed
 unzip &>/dev/null
 if [ $? -ne 0 ]; then
-    Warning "Unzip does not seem to be installed!\n\tThis script depends on this package.\n\tInstall unzip and restart this script."
+    Warning "\"unzip\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall unzip and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
@@ -108,7 +112,7 @@ fi
 # Same for wget
 wget -h &>/dev/null
 if [ $? -ne 0 ]; then
-    Warning "Wget does not seem to be installed!\n\tThis script depends on this package.\n\tInstall wget and restart this script."
+    Warning "\"wget\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall wget and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
@@ -172,18 +176,22 @@ done
 
 if [ "$method" = 1 ]; then
     # Display a small warning for NixOS
-    if [ -d "/nix" ]; then
-        Warning "Warning: Nix(OS) support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method. If AppImages don't work then run from source."
+    if [ -d "/etc/nixos" ]; then
+        Warning "Warning: NixOS support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method. If AppImages don't work then run from source."
+    fi
+
+    pacman -h &>/dev/null
+    if [ $? -eq 0 ]; then
+        Info "We have an official AUR package (https://aur.archlinux.org/packages/lightcord-bin/)! Please use that one!"
     fi
     
     # If there isn't a indicator file present, refuse to continue
-    if { [ -d /opt/lightcord ] || [ -d /opt/Lightcord ]; } && [ ! -e $GLOBAL_INSTALL_DIR/Lightcord/script_check ] && [ $BYPASS_PACKAGEMANAGER = 'false' ]; then
-        Error "Lightcord has been installed via a package manager; refusing to continue.\n\tRelaunch the installer with the environment variable BYPASS_PACKAGEMANAGER set to TRUE if you believe that this is a false positive"
+    if { [ -d $GLOBAL_INSTALL_DIR/lightcord ] || [ -d $GLOBAL_INSTALL_DIR/Lightcord ]; } && [ ! -e $GLOBAL_INSTALL_DIR/Lightcord/script_check ] && [ $BYPASS_PACKAGEMANAGER = 'false' ]; then
+        Error "Lightcord has been installed via a package manager! Aborted installation.\n\tRelaunch the installer with the environment variable BYPASS_PACKAGEMANAGER set to TRUE if you believe that this is a false positive"
         exit 1
     fi
 
-    # Unsure if we're going to keep this. I need to test if NixOS actually wipes /opt
-    Warning "Warning:\n\tBlindly running software as root is a massive security issue.\n\tIf you don't fully trust the software you're running DON'T RUN IT AS ROOT.\n\tIf you know exactly what you are doing, continue.\n\tOtherwise restart this script and choose the second option."
+    Warning "We assume that you have been made aware of the general security practices. You have been warned."
     
     Info "Please enter your password to proceed"
     sudo -K
@@ -247,8 +255,10 @@ case $method in
         Download lightcord.png $ICON;
         sudo mkdir -p /usr/share/pixmaps;
         sudo mv lightcord.png /usr/share/pixmaps;
-        SubInfo "Creating Desktop entry"
-        printf "[Desktop Entry]\nName=Lightcord\nComment[fr_FR]=Un client Discord simple et personalisable\nComment=A simple - customizable - Discord Client\nExec=$GLOBAL_INSTALL_DIR/Lightcord/lightcord\nIcon=lightcord\nTerminal=false\nType=Application\nCategories=Network;InstantMessaging;P2P;\nStartupWMClass=lightcord" > Lightcord.desktop
+        SubInfo "Downloading entry"
+        Download Lightcord.desktop $LC_DESKTOP
+        SubInfo "Configuring entry"
+        sed -i "s/$(EscapePath /opt/Lightcord/Lightcord)/$(EscapePath $GLOBAL_INSTALL_DIR/Lightcord/lightcord)/g" Lightcord.desktop
         sudo mv Lightcord.desktop /usr/share/applications/Lightcord.desktop
         sudo chmod +x /usr/share/applications/Lightcord.desktop;
         SubInfo "Cleaning up"
@@ -266,7 +276,6 @@ case $method in
         sudo rm /usr/share/pixmaps/lightcord.png;
         SubInfo "Deleting Desktop entry"
         sudo rm /usr/share/applications/Lightcord.desktop;
-        sudo rm -f /home/*/.local/share/applications/Lightcord.desktop;
         ;;
 
         3) # Update LC
@@ -351,9 +360,12 @@ case $method in
         mkdir -p "$LOCAL_INSTALL_DIR";
         mv lightcord.AppImage "$LOCAL_INSTALL_DIR";
         chmod +x "$LOCAL_INSTALL_DIR/lightcord.AppImage";
-        mv lightcord.png ~/.local/share/icons/hicolor/512x512/apps;
-        SubInfo "Creating local desktop entry"
-        printf "[Desktop Entry]\nName=Lightcord\nComment[fr_FR]=Un client Discord simple et personalisable\nComment=A simple - customizable - Discord Client\nExec=$LOCAL_INSTALL_DIR/lightcord.AppImage\nIcon=lightcord\nTerminal=false\nType=Application\nCategories=Network;InstantMessaging;P2P;" >> ~/.local/share/applications/lightcord.desktop;
+        mv lightcord.png ~/.local/share/icons/hicolor/512x512/apps
+        SubInfo "Downloading entry"
+        Download lightcord.desktop $LC_DESKTOP
+        SubInfo "Configuring entry"
+        sed -i "s/$(EscapePath /opt/Lightcord/Lightcord)/$(EscapePath $LOCAL_INSTALL_DIR/lightcord.AppImage)/g" lightcord.desktop
+        mv lightcord.desktop ~/.local/share/applications/
         SubInfo "Cleaning up"
         ;;
 
