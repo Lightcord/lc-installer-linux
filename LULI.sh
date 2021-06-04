@@ -117,9 +117,9 @@ if [ $? -ne 0 ]; then
     read -r REPLY
 fi
 
-whereis -b libnspr4 | grep .so &>/dev/null
+whereis -b libnspr4.so | grep .so &>/dev/null
 status=$?
-whereis -b libnss3 | grep .so &>/dev/null
+whereis -b libnss3.so | grep .so &>/dev/null
 let status=$status+$?
 
 # Library checks (should prevent issues like https://github.com/Lightcord/Lightcord/issues/240)
