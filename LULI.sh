@@ -86,7 +86,7 @@ Error() {
     tput sgr0
 }
 
-if [ "$TERM" = dumb ]; then
+if [ "$TERM" = "dumb" ]; then
     exit 0
 fi
 
@@ -102,35 +102,31 @@ if [ -d /bedrock ]; then
 fi
 
 # Check if unzip is installed
-(unzip -v) &>/dev/null
-if [ $? -ne 0 ]; then
+if [ $(command -v unzip >/dev/null) ]; then
     Warning "\"unzip\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall unzip and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
 
 # Same for wget
-(wget --version) &>/dev/null
-if [ $? -ne 0 ]; then
+if [ $(command -v wget >/dev/null) ]; then
     Warning "\"wget\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall wget and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
 
-(whereis -b libnspr4.so | grep .so) &>/dev/null
+(whereis -b libnspr4.so | grep .so) >/dev/null
 status=$?
-(whereis -b libnss3.so | grep .so) &>/dev/null
-let status=$status+$?
+(whereis -b libnss3.so | grep .so) >/dev/null
+status=$(($status+$?))
 
 # Library checks (should prevent issues like https://github.com/Lightcord/Lightcord/issues/240)
 if [ $status -ne 0 ]; then
     Warning "Some required libraries seem to not be installed!\n\tMake sure that both 'libnspr4.so' and 'libnss3.so' are present in '/lib'"
-    (pacman --version) &>/dev/null
-    if [ $? -eq 0 ]; then
+    if [ $(command -v pacman >/dev/null) ]; then
         SubInfo "$(tput setaf 12 && tput bold)Arch Linux or Arch-based$(tput sgr0 && tput setaf 15)\n\tsudo pacman -S nss nspr"
     fi
-    (apt --version) &>/dev/null
-    if [ $? -eq 0 ]; then
+    if [ $(command -v apt >/dev/null) ]; then
         SubInfo "$(tput setaf 13 && tput bold)Debian or Debian-based$(tput sgr0 && tput setaf 15)\n\tsudo apt install libnspr4 libnss3"
     fi
     Info "Press enter if you believe that this is a false-positive."
@@ -180,9 +176,8 @@ if [ "$method" = 1 ]; then
         Warning "Warning: NixOS support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method. If AppImages don't work then run from source."
     fi
 
-    (pacman -h) &>/dev/null
-    if [ $? -eq 0 ]; then
-        Info "We have an official AUR package (https://aur.archlinux.org/packages/lightcord-bin/)! Please use that one!"
+    if [ ! $(command -v pacman >/dev/null) ]; then
+        Info "We have a official AUR package (https://aur.archlinux.org/packages/lightcord-bin/)! Please use that one!"
     fi
     
     # If there isn't a indicator file present, refuse to continue

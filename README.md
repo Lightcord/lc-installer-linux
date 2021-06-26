@@ -22,7 +22,7 @@ You need to install the `base-devel` and `git` packages first
 
 ### Other Linux distributions
 
-Execute `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
+Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
 The installer will present you with a interactive menu
 
