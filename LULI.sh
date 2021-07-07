@@ -2,6 +2,18 @@
 # Lightcord unified Linux installer by https://github.com/GermanBread
 # POSIX compliance by https://github.com/pryme-svg
 
+#                                ___           ___                       ___           ___           ___          _____    
+#                  ___          /  /\         /__/\          ___        /  /\         /  /\         /  /\        /  /::\   
+#                 /  /\        /  /:/_        \  \:\        /  /\      /  /:/        /  /::\       /  /::\      /  /:/\:\  
+#  ___     ___   /  /:/       /  /:/ /\        \__\:\      /  /:/     /  /:/        /  /:/\:\     /  /:/\:\    /  /:/  \:\ 
+# /__/\   /  /\ /__/::\      /  /:/_/::\   ___ /  /::\    /  /:/     /  /:/  ___   /  /:/  \:\   /  /:/~/:/   /__/:/ \__\:|
+# \  \:\ /  /:/ \__\/\:\__  /__/:/__\/\:\ /__/\  /:/\:\  /  /::\    /__/:/  /  /\ /__/:/ \__\:\ /__/:/ /:/___ \  \:\ /  /:/
+#  \  \:\  /:/     \  \:\/\ \  \:\ /~~/:/ \  \:\/:/__\/ /__/:/\:\   \  \:\ /  /:/ \  \:\ /  /:/ \  \:\/:::::/  \  \:\  /:/ 
+#   \  \:\/:/       \__\::/  \  \:\  /:/   \  \::/      \__\/  \:\   \  \:\  /:/   \  \:\  /:/   \  \::/~~~~    \  \:\/:/  
+#    \  \::/        /__/:/    \  \:\/:/     \  \:\           \  \:\   \  \:\/:/     \  \:\/:/     \  \:\         \  \::/   
+#     \__\/         \__\/      \  \::/       \  \:\           \__\/    \  \::/       \  \::/       \  \:\         \__\/    
+#                               \__\/         \__\/                     \__\/         \__\/         \__\/                  
+
 #
 #	CHANGE STUFF HERE
 #
@@ -102,14 +114,14 @@ if [ -d /bedrock ]; then
 fi
 
 # Check if unzip is installed
-if [ $(command -v unzip >/dev/null) ]; then
+if ! command -v unzip >/dev/null; then
     Warning "\"unzip\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall unzip and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
 fi
 
 # Same for wget
-if [ $(command -v wget >/dev/null) ]; then
+if ! command -v wget >/dev/null; then
     Warning "\"wget\" does not seem to be installed!\n\tThis script depends on this package.\n\tInstall wget and restart this script."
     Info "Press enter if you believe that this is a false-positive."
     read -r REPLY
@@ -123,10 +135,10 @@ status=$(($status+$?))
 # Library checks (should prevent issues like https://github.com/Lightcord/Lightcord/issues/240)
 if [ $status -ne 0 ]; then
     Warning "Some required libraries seem to not be installed!\n\tMake sure that both 'libnspr4.so' and 'libnss3.so' are present in '/lib'"
-    if [ $(command -v pacman >/dev/null) ]; then
+    if command -v pacman >/dev/null; then
         SubInfo "$(tput setaf 12 && tput bold)Arch Linux or Arch-based$(tput sgr0 && tput setaf 15)\n\tsudo pacman -S nss nspr"
     fi
-    if [ $(command -v apt >/dev/null) ]; then
+    if command -v apt >/dev/null; then
         SubInfo "$(tput setaf 13 && tput bold)Debian or Debian-based$(tput sgr0 && tput setaf 15)\n\tsudo apt install libnspr4 libnss3"
     fi
     Info "Press enter if you believe that this is a false-positive."
@@ -176,7 +188,7 @@ if [ "$method" = 1 ]; then
         Warning "Warning: NixOS support is currently very experimental.\n\tIt is strongly discouraged to use the global install option at this time. Please use the AppImage install method. If AppImages don't work then run from source."
     fi
 
-    if [ ! $(command -v pacman >/dev/null) ]; then
+    if command -v pacman >/dev/null; then
         Info "We have a official AUR package (https://aur.archlinux.org/packages/lightcord-bin/)! Please use that one!"
     fi
     
