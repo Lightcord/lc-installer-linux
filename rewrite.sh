@@ -17,10 +17,6 @@
 #	DO NOT CHANGE
 #
 
-if [ -z $BYPASS_PACKAGEMANAGER ]; then
-    BYPASS_PACKAGEMANAGER='false'
-fi
-
 # URL for downloads
 LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcord-linux-x64.zip'
 ICON='https://raw.githubusercontent.com/Lightcord/Lightcord/master/discord.png'
@@ -79,7 +75,7 @@ cat << "logo_end"
  / /____/ // /_/ / __  / / / / /___/ /_/ / _, _/ /_/ / 
 /_____/___/\____/_/ /_/ /_/  \____/\____/_/ |_/_____/  
 
-            Linux installer (version 2)
+                Linux installer
 
 logo_end
 }
@@ -124,6 +120,7 @@ Confirmation() {
     
     read _choice
     [[ $_choice = [nN] ]] && return 1 || return 0
+    unset _choice
 }
 Download() {
 	wget -qq -O $1 $2
@@ -143,16 +140,17 @@ EscapePath() {
     Warning '"unzip" seems to not be installed, the script might not function properly without it'
 
 CheckForLibrary libnspr4.so
-status=$?
+_status=$?
 CheckForLibrary libnss3.so
-status=$(($status+$?))
-if [ $status -ne 0 ]; then
+_status=$(($status+$?))
+if [ $_status -ne 0 ]; then
     Warning "Some required libraries seem to not be installed!\n\tMake sure that both 'libnspr4.so' and 'libnss3.so' are present in '/lib'"
     (CheckForProgram pacman) && \
         Info "$(tput setaf 12 && tput bold)Arch Linux or Arch-based$(tput sgr0 && tput setaf 15)\n\tsudo pacman -S nss nspr"
     (CheckForProgram apt) && \
         Info "$(tput setaf 13 && tput bold)Debian or Debian-based$(tput sgr0 && tput setaf 15)\n\tsudo apt install libnspr4 libnss3"
 fi
+unset _status
 
 [ -d /etc/nixos ] && \
     Warning "NixOS is not supported. Things might break"
@@ -246,6 +244,7 @@ case $_scope in
                 mv $_downloadcache/Lightcord/{lightcord,Lightcord} 2>/dev/null
                 
                 mkdir -p $_downloadcache/Lightcord
+                touch $_downloadcache/Lightcord/script
                 [ $_mode = 2 ] && \
                     touch $_downloadcache/Lightcord/isappimage
                 chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
@@ -300,6 +299,7 @@ case $_scope in
                 mv $_downloadcache/Lightcord/{lightcord,Lightcord} 2>/dev/null
                 
                 mkdir -p $_downloadcache/Lightcord
+                touch $_downloadcache/Lightcord/script
                 [ $_mode = 2 ] && \
                     touch $_downloadcache/Lightcord/isappimage
                 chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
@@ -321,5 +321,6 @@ case $_scope in
     ;;
 esac
 rm -rf $_downloadcache
+unset LC ICON DESKTOP APPIMAGE _downloadcache _operation _mode _scope
 
 tput cnorm

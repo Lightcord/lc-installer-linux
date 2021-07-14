@@ -24,14 +24,13 @@ You need to install the `base-devel` and `git` packages first
 
 Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
-*Try out the rewrite! (not feature complete yet)* `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/rewrite.sh)"`
+Try out the rewrite! `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/rewrite.sh)"`
 
-The installer will present you with a interactive menu
+The installer will greet you with an interactive menu
 
 ### Remarks
 
-* If you use this script to install Lightcord, use it to uninstall again. This script is smart enough to detect if you used your package manager to install Lightcord.
-* If you use Bedrock Linux make sure that the installer's and Lightcord's requirements are statisfied in the stratus you're installing Lightcord in!
+* Do not use this script if your Distro has a package for Lightcord
 
 ## Contributing
 
