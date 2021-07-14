@@ -62,7 +62,7 @@ ListHeader() {
 }
 ListItem() {
     (CheckForProgram lolcat) && \
-        printf "[$1]" | lolcat -S $1 -F .2 || \
+        printf "[$1]" | lolcat -S $(($1)) -F .2 || \
             printf "[$1]"
     printf " $2\n"
 }
@@ -156,7 +156,7 @@ unset _status
     Warning "NixOS is not supported. Things might break"
 
 (CheckForProgram lolcat) && \
-    LogoSplash | lolcat -S -5 -F .2 || \
+    LogoSplash | lolcat -S 58 -F .2 || \
         LogoSplash
 CreditSplash
 
