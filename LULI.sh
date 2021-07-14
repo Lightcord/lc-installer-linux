@@ -14,11 +14,7 @@
 #     \__\/         \__\/      \  \::/       \  \:\           \__\/    \  \::/       \  \::/       \  \:\         \__\/    
 #                               \__\/         \__\/                     \__\/         \__\/         \__\/                  
 
-#
-#	CHANGE STUFF HERE
-#
-
-# If set to anything other than "false" this will allow you to modify the Lightcord installation even if it was
+# If set to anything other than "false" this will allow you to modify the Lightcord installation even if it was installed via a package manager
 if [ -z $BYPASS_PACKAGEMANAGER ]; then
     BYPASS_PACKAGEMANAGER='false'
 fi
@@ -30,10 +26,6 @@ fi
 if [ -z $LOCAL_INSTALL_DIR ]; then
     LOCAL_INSTALL_DIR="$HOME/.lightcord"
 fi
-
-#
-#	DON'T TOUCH BELOW HERE
-#
 
 # URL for downloads
 ICON='https://raw.githubusercontent.com/Lightcord/Lightcord/master/discord.png'

@@ -24,6 +24,8 @@ You need to install the `base-devel` and `git` packages first
 
 Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
+*Try out the rewrite! (not feature complete yet)* `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/rewrite.sh)"`
+
 The installer will present you with a interactive menu
 
 ### Remarks
