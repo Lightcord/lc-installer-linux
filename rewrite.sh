@@ -25,6 +25,7 @@ fi
 LC='https://github.com/Lightcord/Lightcord/releases/latest/download/lightcord-linux-x64.zip'
 ICON='https://raw.githubusercontent.com/Lightcord/Lightcord/master/discord.png'
 DESKTOP='https://raw.githubusercontent.com/Lightcord/Lightcord/master/Lightcord.desktop'
+APPIMAGE='https://github.com/Lightcord/Lightcord/releases/latest/download/Lightcord-linux-x86_64.AppImage'
 
 Step() {
     tput setaf 8
@@ -161,7 +162,6 @@ fi
         LogoSplash
 CreditSplash
 
-# Selection menu
 tput civis
 
 ListHeader "Select scope"
@@ -176,16 +176,15 @@ echo
 
 ListHeader "Select mode"
 ListItem 1 "Install"
-ListItem 2 "Uninstall"
+ListItem 2 "Install (AppImage)"
 ListItem 3 "Update"
-while ! [[ $_mode = [123] ]]; do
+ListItem 4 "Uninstall"
+while ! [[ $_mode = [1234] ]]; do
     tput sc
     read -n 1 _mode
     tput rc
 done
 echo
-
-tput cnorm
 
 Step "The following will be done:"
 case $_scope in
@@ -201,39 +200,65 @@ case $_mode in
         Info "Install Lightcord"
     ;;
     2)
-        Info "Uninstall Lightcord"
+        Info "Install Lightcord AppImage"
     ;;
     3)
         Info "Update Lightcord"
     ;;
+    4)
+        Info "Uninstall Lightcord"
+    ;;
 esac
-(Confirmation "Continue?") || \
-    (Error "Aborted by user" && exit 1)
 
-[ $_mode -eq 3 ] && _mode=1
+tput cnorm
+
+(Confirmation "Continue?") || \
+    exit 1
+
+tput civis
+
+[[ $_mode = [123] ]] && _operation=1
+[[ $_mode = [4] ]] && _operation=2
 _downloadcache=$(mktemp -d)
 case $_scope in
     1)
-        case $_mode in
+        case $_operation in
             1)
                 Info "Downloading assets"
-                Download $_downloadcache/lightcord-linux-x64.zip $LC
+                case $_mode in
+                    1)
+                        Download $_downloadcache/Lightcord.zip $LC
+                    ;;
+                    2)
+                        Download $_downloadcache/Lightcord.AppImage $APPIMAGE
+                    ;;
+                    3)
+                        [ -e /opt/Lightcord/isappimage ] && \
+                            Download $_downloadcache/Lightcord.AppImage $APPIMAGE || \
+                                Download $_downloadcache/Lightcord.zip $LC
+                    ;;
+                esac
                 Download $_downloadcache/Lightcord.desktop $DESKTOP
                 Download $_downloadcache/lightcord.png $ICON
                 
                 Info "Preparing assets"
-                unzip -qq $_downloadcache/lightcord-linux-x64.zip -d $_downloadcache/Lightcord
-                mv -f $_downloadcache/Lightcord/{lightcord,Lightcord}
+                unzip -qq $_downloadcache/Lightcord.zip -d $_downloadcache/Lightcord 2>/dev/null
+                mv $_downloadcache/Lightcord/{lightcord,Lightcord} 2>/dev/null
+                
+                mkdir -p $_downloadcache/Lightcord
+                [ $_mode = 2 ] && \
+                    touch $_downloadcache/Lightcord/isappimage
+                chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
+                mv $_downloadcache/Lightcord{.AppImage,/Lightcord} 2>/dev/null
 
                 Step "Privilege elevation required"
                 sudo -K
                 [ "$(sudo -p "Enter your password here: " id -u)" != "0" ] && \
-                    Error "Authentication failed" && exit 1 || \
-                        Info "Authentication suceeded"
+                    Error "Authentication failed" && exit 1
 
                 Info "Installing assets"
-                sudo mkdir -p /{opt,usr/share/{applications,pixmaps}}/
-                sudo mv -f $_downloadcache/Lightcord/ /opt/
+                sudo mkdir -p /{opt/Lightcord,usr/share/{applications,pixmaps}}/
+                sudo mv -f $_downloadcache/Lightcord/* /opt/Lightcord/
                 sudo mv -f $_downloadcache/Lightcord.desktop /usr/share/applications/
                 sudo mv -f $_downloadcache/lightcord.png /usr/share/pixmaps/
             ;;
@@ -241,8 +266,7 @@ case $_scope in
                 Step "Privilege elevation required"
                 sudo -K
                 [ "$(sudo -p "Enter your password here: " id -u)" != "0" ] && \
-                    Error "Authentication failed" && exit 1 || \
-                        Info "Authentication suceeded"
+                    Error "Authentication failed" && exit 1
                 
                 Info "Deleting Lightcord"
                 sudo rm -rf /opt/Lightcord/
@@ -252,16 +276,34 @@ case $_scope in
     ;;
 
     2)
-        case $_mode in
+        case $_operation in
             1)
                 Info "Downloading assets"
-                Download $_downloadcache/lightcord-linux-x64.zip $LC
+                case $_mode in
+                    1)
+                        Download $_downloadcache/Lightcord.zip $LC
+                    ;;
+                    2)
+                        Download $_downloadcache/Lightcord.AppImage $APPIMAGE
+                    ;;
+                    3)
+                        [ -e ~/.Lightcord/isappimage ] && \
+                            Download $_downloadcache/Lightcord.AppImage $APPIMAGE || \
+                                Download $_downloadcache/Lightcord.zip $LC
+                    ;;
+                esac
                 Download $_downloadcache/Lightcord.desktop $DESKTOP
                 Download $_downloadcache/lightcord.png $ICON
                 
                 Info "Preparing assets"
-                unzip -qq $_downloadcache/lightcord-linux-x64.zip -d $_downloadcache/Lightcord
-                mv -f $_downloadcache/Lightcord/{lightcord,Lightcord}
+                unzip -qq $_downloadcache/Lightcord.zip -d $_downloadcache/Lightcord 2>/dev/null
+                mv $_downloadcache/Lightcord/{lightcord,Lightcord} 2>/dev/null
+                
+                mkdir -p $_downloadcache/Lightcord
+                [ $_mode = 2 ] && \
+                    touch $_downloadcache/Lightcord/isappimage
+                chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
+                mv $_downloadcache/Lightcord{.AppImage,/Lightcord} 2>/dev/null
                 sed -i "s/$(EscapePath /opt/Lightcord/Lightcord)/$(EscapePath ~/.Lightcord/Lightcord)/g" $_downloadcache/Lightcord.desktop
 
                 Info "Installing assets"
@@ -279,3 +321,5 @@ case $_scope in
     ;;
 esac
 rm -rf $_downloadcache
+
+tput cnorm
