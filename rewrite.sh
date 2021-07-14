@@ -56,13 +56,13 @@ Error() {
 ListHeader() {
     tput smul
     (CheckForProgram lolcat) && \
-        printf "$1\n" | lolcat -S -5 -F .2 || \
+        printf "$1\n" | lolcat -S 58 -F .2 || \
             printf "$1\n"
     tput sgr0
 }
 ListItem() {
-    (CheckForProgram lolcat) && \
-        printf "[$1]" | lolcat -S $(($1)) -F .2 || \
+    #(CheckForProgram lolcat) && \
+        #printf "[$1]" | lolcat -S $1 -F .2 || \
             printf "[$1]"
     printf " $2\n"
 }
