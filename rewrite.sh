@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Lightcord unified Linux installer by https://github.com/GermanBread
 # POSIX compliance by https://github.com/pryme-svg (does not apply to rewrite ...yet)
 
@@ -142,7 +143,7 @@ EscapePath() {
 CheckForLibrary libnspr4.so
 _status=$?
 CheckForLibrary libnss3.so
-_status=$(($status+$?))
+_status=$(($_status+$?))
 if [ $_status -ne 0 ]; then
     Warning "Some required libraries seem to not be installed!\n\tMake sure that both 'libnspr4.so' and 'libnss3.so' are present in '/lib'"
     (CheckForProgram pacman) && \
