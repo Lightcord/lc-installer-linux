@@ -280,6 +280,7 @@ case $_scope in
                 sudo mv -f $_downloadcache/Lightcord/* /opt/Lightcord/
                 sudo mv -f $_downloadcache/Lightcord.desktop /usr/share/applications/
                 sudo mv -f $_downloadcache/lightcord.png /usr/share/pixmaps/
+                sudo ln -s /opt/Lightcord/Lightcord /usr/bin/lightcord
             ;;
             2)
                 Step "Privilege elevation required"
@@ -289,7 +290,9 @@ case $_scope in
                 
                 Info "Deleting Lightcord"
                 sudo rm -rf /opt/Lightcord/
-                sudo rm -f /usr/share/{applications/Lightcord.desktop,pixmaps/lightcord.png}
+                sudo rm -f /usr/share/pixmaps/lightcord.png
+                sudo rm -f /usr/share/applications/Lightcord.desktop
+                sudo rm /usr/bin/lightcord
             ;;
         esac
     ;;
@@ -327,15 +330,18 @@ case $_scope in
                 sed -i "s/$(EscapePath /opt/Lightcord/Lightcord)/$(EscapePath ~/.Lightcord/Lightcord)/g" $_downloadcache/Lightcord.desktop
 
                 Info "Installing assets"
-                mkdir -p ~/.{Lightcord,local/share/{applications,icons/hicolor/512x512/apps}}/
+                mkdir -p ~/.{Lightcord,local/{bin,share/{applications,icons/hicolor/512x512/apps}}}/
                 mv -f $_downloadcache/Lightcord/* ~/.Lightcord/
                 mv -f $_downloadcache/Lightcord.desktop ~/.local/share/applications/
                 mv -f $_downloadcache/lightcord.png ~/.local/share/icons/hicolor/512x512/apps/
+                ln -s ~/.Lightcord/Lightcord ~/.local/bin/lightcord
             ;;
             2)
                 Info "Deleting Lightcord"
                 rm -rf ~/.Lightcord/
-                rm -f ~/.local/share/{applications/Lightcord.desktop,icons/hicolor/512x512/apps/lightcord.png}
+                rm -f ~/.local/share/applications/Lightcord.desktop
+                rm -f ~/.local/share/icons/hicolor/512x512/apps/lightcord.png
+                rm -f ~/.local/bin/lightcord
             ;;
         esac
     ;;
