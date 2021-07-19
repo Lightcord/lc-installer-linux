@@ -22,9 +22,11 @@ You need to install the `base-devel` and `git` packages first
 
 ### Other Linux distributions
 
-Execute `sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
+Run the installer using this command:
+`bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/lightcordctl)"`
 
-Try out the rewrite! `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/rewrite.sh)"`
+Legacy installer:
+`sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
 The installer will greet you with an interactive menu
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Lightcord unified Linux installer by https://github.com/GermanBread
-# POSIX compliance by https://github.com/pryme-svg (does not apply to rewrite ...yet)
+# Honorable mention for former POSIX compliance: https://github.com/pryme-svg
 
 #                                ___           ___                       ___           ___           ___          _____    
 #                  ___          /  /\         /__/\          ___        /  /\         /  /\         /  /\        /  /::\   
@@ -67,6 +67,12 @@ ListItem() {
             printf "[$1]"
     printf " $2\n"
 }
+FakeListItem() {
+    tput setaf 8
+    printf "[$1]"
+    printf " $2\n"
+    tput sgr0
+}
 
 LogoSplash() {
 cat << "logo_end"
@@ -121,7 +127,15 @@ Confirmation() {
     
     read _choice
     [[ $_choice = [nN] ]] && return 1 || return 0
-    unset _choice
+}
+# 0 = OK
+InvertedConfirmation() {
+    tput bold
+    printf "$1 [y/N] "
+    tput sgr0
+    
+    read _choice
+    [[ $_choice = [yY] ]] && return 0 || return 1
 }
 Download() {
 	wget -qq -O $1 $2
@@ -153,9 +167,6 @@ if [ $_status -ne 0 ]; then
 fi
 unset _status
 
-[ -d /etc/nixos ] && \
-    Warning "NixOS is not supported. Things might break"
-
 (CheckForProgram lolcat) && \
     LogoSplash | lolcat -S 58 -F .2 || \
         LogoSplash
@@ -164,7 +175,9 @@ CreditSplash
 tput civis
 
 ListHeader "Select scope"
-ListItem 1 "Global"
+[ -d /etc/nixos ] && \
+    FakeListItem 1 "Global" || \
+        ListItem 1 "Global"
 ListItem 2 "Local"
 while ! [[ $_scope = [12] ]]; do
     tput sc
@@ -172,6 +185,12 @@ while ! [[ $_scope = [12] ]]; do
     tput rc
 done
 echo
+
+if [ -d /etc/nixos ] && [ $_scope = 1 ]; then
+    Warning "A system-wide installation on NixOS is completely broken! " && \
+        (InvertedConfirmation "Continue anyways?") || \
+            exit 1
+fi
 
 ListHeader "Select mode"
 ListItem 1 "Install"
@@ -322,6 +341,6 @@ case $_scope in
     ;;
 esac
 rm -rf $_downloadcache
-unset LC ICON DESKTOP APPIMAGE _downloadcache _operation _mode _scope
+unset LC ICON DESKTOP APPIMAGE _downloadcache _operation _mode _scope _choice
 
 tput cnorm
