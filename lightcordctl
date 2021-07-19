@@ -292,7 +292,7 @@ case $_scope in
                 sudo rm -rf /opt/Lightcord/
                 sudo rm -f /usr/share/pixmaps/lightcord.png
                 sudo rm -f /usr/share/applications/Lightcord.desktop
-                sudo rm /usr/bin/lightcord
+                sudo rm -f /usr/bin/lightcord
             ;;
         esac
     ;;
