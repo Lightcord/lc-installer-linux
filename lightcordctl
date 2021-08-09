@@ -251,7 +251,7 @@ case $_scope in
                         Download $_downloadcache/Lightcord.AppImage $APPIMAGE
                     ;;
                     3)
-                        [ -e /opt/Lightcord/isappimage ] && \
+                        [ -e /opt/Lightcord/appimage ] && \
                             Download $_downloadcache/Lightcord.AppImage $APPIMAGE || \
                                 Download $_downloadcache/Lightcord.zip $LC
                     ;;
@@ -266,7 +266,7 @@ case $_scope in
                 mkdir -p $_downloadcache/Lightcord
                 touch $_downloadcache/Lightcord/script
                 [ $_mode = 2 ] && \
-                    touch $_downloadcache/Lightcord/isappimage
+                    touch $_downloadcache/Lightcord/appimage
                 chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
                 mv $_downloadcache/Lightcord{.AppImage,/Lightcord} 2>/dev/null
 
@@ -327,7 +327,7 @@ case $_scope in
                     touch $_downloadcache/Lightcord/isappimage
                 chmod +x $_downloadcache/Lightcord.AppImage 2>/dev/null
                 mv $_downloadcache/Lightcord{.AppImage,/Lightcord} 2>/dev/null
-                sed -i "s/$(EscapePath /opt/Lightcord/Lightcord)/$(EscapePath ~/.Lightcord/Lightcord)/g" $_downloadcache/Lightcord.desktop
+                sed -i "s,/opt/Lightcord/Lightcord,~/.Lightcord/Lightcord,g" $_downloadcache/Lightcord.desktop
 
                 Info "Installing assets"
                 mkdir -p ~/.{Lightcord,local/{bin,share/{applications,icons/hicolor/512x512/apps}}}/
@@ -335,6 +335,7 @@ case $_scope in
                 mv -f $_downloadcache/Lightcord.desktop ~/.local/share/applications/
                 mv -f $_downloadcache/lightcord.png ~/.local/share/icons/hicolor/512x512/apps/
                 ln -s ~/.Lightcord/Lightcord ~/.local/bin/lightcord
+		        chmod +x ~/.local/bin/lightcord
             ;;
             2)
                 Info "Deleting Lightcord"
