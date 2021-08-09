@@ -335,7 +335,7 @@ case $_scope in
                 mv -f $_downloadcache/Lightcord.desktop ~/.local/share/applications/
                 mv -f $_downloadcache/lightcord.png ~/.local/share/icons/hicolor/512x512/apps/
                 ln -s ~/.Lightcord/Lightcord ~/.local/bin/lightcord
-		        chmod +x ~/.local/bin/lightcord
+                chmod +x ~/.local/bin/lightcord
             ;;
             2)
                 Info "Deleting Lightcord"
