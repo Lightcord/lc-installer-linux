@@ -1,3 +1,5 @@
+## As of 12th September 2021 Lightcord has been discontinued.
+
 # Lightcord Linux installer
 
 The installer for Lightcord on Linux! It can install, update and uninstall Lightcord!
@@ -31,9 +33,6 @@ git clone https://aur.archlinux.org/lightcord-bin.git && \
 
 Run the installer using this command:
 `bash -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/lightcordctl)"`
-
-Legacy installer:
-`sh -c "$(curl -s https://raw.githubusercontent.com/Lightcord/lc-installer-linux/master/LULI.sh)"`
 
 The installer will greet you with an interactive menu
 

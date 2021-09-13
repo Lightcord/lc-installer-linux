@@ -14,6 +14,9 @@
 #     \__\/         \__\/      \  \::/       \  \:\           \__\/    \  \::/       \  \::/       \  \:\         \__\/    
 #                               \__\/         \__\/                     \__\/         \__\/         \__\/                  
 
+echo 'This installer has been deprecated, use the rewritten installer lightcordctl instead.'
+exit 1
+
 # If set to anything other than "false" this will allow you to modify the Lightcord installation even if it was installed via a package manager
 if [ -z $BYPASS_PACKAGEMANAGER ]; then
     BYPASS_PACKAGEMANAGER='false'

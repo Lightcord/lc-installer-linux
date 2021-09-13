@@ -53,6 +53,8 @@ Error() {
     tput setaf 9
     printf "$*\n"
     tput sgr0
+    
+    exit 1
 }
 ListHeader() {
     tput smul
@@ -140,19 +142,56 @@ InvertedConfirmation() {
 Download() {
 	wget -qq -O $1 $2
 }
-EscapePath() {
-    echo $* | sed 's/\//\\\//g'
+
+Discontinued() {
+    _columns=$(tput cols)
+    _lines=$(tput lines)
+
+    tput setaf 2
+    for ((x=0; x < $_columns; x++)); do
+        echo -n '#'
+        sleep ".0$(($RANDOM % 50))"
+    done
+    tput sgr0
+    
+    for ((y=0; y < $(($_lines / 2 - 2)); y++)); do
+        echo
+        sleep ".$(($RANDOM % 100))"
+    done
+
+    echo
+    echo 'Lightcord has been officially discontinued. Please choose the uninstall option instead.'
+    echo '(override with "export IGNORE_ABANDONED=true")'
+    echo
+
+    for ((y=0; y < $(($_lines / 2 - 3)); y++)); do
+        for ((x=0; x < $_columns; x++)); do
+            echo -n ' '
+        done
+        echo
+        sleep ".$(($RANDOM % 100))"
+    done
+
+    tput setaf 3
+    for ((x=0; x < $_columns; x++)); do
+        echo -n '#'
+        sleep ".0$(($RANDOM % 50))"
+    done
+    tput sgr0
+
+    tput cnorm
+
+    exit 1
 }
 
 [ "$TERM" = "dumb" ] && exit 0
 
-[ $(id -u) -eq 0 ] \
- && Error "Do not run this script as root" && exit 1
-
 (CheckForProgram wget) || \
-    Warning '"wget" seems to not be installed, the script might not function properly without it'
+    Error '"wget" is not installed, this script uses wget to download files'
 (CheckForProgram unzip) || \
-    Warning '"unzip" seems to not be installed, the script might not function properly without it'
+    Error '"unzip" is not installed, this script uses unzip to decompress zip archives'
+(CheckForProgram sudo) || \
+    Error '"sudo" is not installed, this script depends on this command for privilege escalation. Global installation will therefore not be available'
 
 CheckForLibrary libnspr4.so
 _status=$?
@@ -186,8 +225,8 @@ while ! [[ $_scope = [12] ]]; do
 done
 echo
 
-if [ -d /etc/nixos ] && [ $_scope = 1 ]; then
-    Warning "A system-wide installation on NixOS is completely broken! " && \
+if [ -d /etc/nixos ]; then
+    Warning "A installation on NixOS is completely broken! " && \
         (InvertedConfirmation "Continue anyways?") || \
             exit 1
 fi
@@ -235,6 +274,8 @@ tput cnorm
 
 tput civis
 
+[[ $_mode = [13] ]] && [ "$IGNORE_ABANDONED" != "true" ] && Discontinued
+
 [[ $_mode = [123] ]] && _operation=1
 [[ $_mode = [4] ]] && _operation=2
 _downloadcache=$(mktemp -d)
@@ -273,7 +314,7 @@ case $_scope in
                 Step "Privilege elevation required"
                 sudo -K
                 [ "$(sudo -p "Enter your password here: " id -u)" != "0" ] && \
-                    Error "Authentication failed" && exit 1
+                    Error "Authentication failed"
 
                 Info "Installing assets"
                 sudo mkdir -p /{opt/Lightcord,usr/share/{applications,pixmaps}}/
@@ -286,7 +327,7 @@ case $_scope in
                 Step "Privilege elevation required"
                 sudo -K
                 [ "$(sudo -p "Enter your password here: " id -u)" != "0" ] && \
-                    Error "Authentication failed" && exit 1
+                    Error "Authentication failed"
                 
                 Info "Deleting Lightcord"
                 sudo rm -rf /opt/Lightcord/
