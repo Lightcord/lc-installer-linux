@@ -240,7 +240,7 @@ tput cnorm
 
 tput civis
 
-[[ $_mode = [13] ]] && [ "$IGNORE_ABANDONED" != "true" ] && Discontinued
+[[ $_mode = [123] ]] && [ "$IGNORE_ABANDONED" != "true" ] && Discontinued
 
 [[ $_mode = [123] ]] && _operation=1
 [[ $_mode = [4] ]] && _operation=2
