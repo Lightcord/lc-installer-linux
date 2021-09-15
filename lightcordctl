@@ -54,6 +54,7 @@ Error() {
     printf "$*\n"
     tput sgr0
     
+    tput cnorm
     exit 1
 }
 ListHeader() {
@@ -144,44 +145,9 @@ Download() {
 }
 
 Discontinued() {
-    _columns=$(tput cols)
-    _lines=$(tput lines)
-
-    tput setaf 2
-    for ((x=0; x < $_columns; x++)); do
-        echo -n '#'
-        sleep ".0$(($RANDOM % 50))"
-    done
-    tput sgr0
-    
-    for ((y=0; y < $(($_lines / 2 - 2)); y++)); do
-        echo
-        sleep ".$(($RANDOM % 100))"
-    done
-
-    echo
-    echo 'Lightcord has been officially discontinued. Please choose the uninstall option instead.'
-    echo '(override with "export IGNORE_ABANDONED=true")'
-    echo
-
-    for ((y=0; y < $(($_lines / 2 - 3)); y++)); do
-        for ((x=0; x < $_columns; x++)); do
-            echo -n ' '
-        done
-        echo
-        sleep ".$(($RANDOM % 100))"
-    done
-
-    tput setaf 3
-    for ((x=0; x < $_columns; x++)); do
-        echo -n '#'
-        sleep ".0$(($RANDOM % 50))"
-    done
-    tput sgr0
-
-    tput cnorm
-
-    exit 1
+    Warning 'Lightcord has been officially discontinued. Please choose the uninstall option instead.'
+    Info '(override with "export IGNORE_ABANDONED=true")'
+    Error 'Installing Lightcord is not recommended!'
 }
 
 [ "$TERM" = "dumb" ] && exit 0
